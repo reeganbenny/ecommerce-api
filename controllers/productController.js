@@ -160,3 +160,24 @@ exports.deleteProduct = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.searchProducts = async (req, res, next) => {
+  try {
+    const { val } = req.query;
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: new RegExp(val, "i") } },
+        { description: { $regex: new RegExp(val, "i") } },
+      ],
+    }).populate({
+      path: "variants",
+      match: { name: { $regex: new RegExp(val, "i") } }, // Variant name search
+    });
+    res.status(200).json(products);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

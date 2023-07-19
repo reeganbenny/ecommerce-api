@@ -4,6 +4,7 @@ const productController = require("../controllers/productController");
 const createProductValidator = require("../utils/validators");
 
 // Product routes
+router.get("/search", productController.searchProducts);
 router.post(
   "/",
   createProductValidator.createProductValidator,
