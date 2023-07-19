@@ -17,15 +17,9 @@ const productSchema = new Schema(
     },
     variants: [
       {
-        variantsId: {
-          type: Schema.Types.ObjectId,
-          ref: "variants",
-          required: true,
-        },
-        SKU: {
-          type: String,
-          required: true,
-        },
+        type: Schema.Types.ObjectId,
+        ref: "variants",
+        required: true,
       },
     ],
   },
