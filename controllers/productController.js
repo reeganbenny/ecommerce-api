@@ -1,6 +1,5 @@
 const Product = require("../models/product");
-const variants = require("../models/variants");
-const Variant = require("../models/variants");
+const Variants = require("../models/variants");
 const { validationResult } = require("express-validator");
 
 exports.createProduct = async (req, res, next) => {
@@ -29,7 +28,7 @@ exports.createProduct = async (req, res, next) => {
         const { name, SKU, additionalCost, stockCount } = element;
 
         //Creating a new Variant
-        const newVariant = await Variant.create({
+        const newVariant = await Variants.create({
           name,
           SKU,
           additionalCost,
@@ -107,6 +106,14 @@ exports.getAllProducts = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation failed.");
+      error.statusCode = 422;
+      error.data = errors.array();
+      console.log(errors);
+      throw error;
+    }
     const { name, description, price } = req.body;
     const updatedProduct = await Product.updateOne(
       { _id: productId },
@@ -118,7 +125,6 @@ exports.updateProduct = async (req, res, next) => {
         },
       }
     );
-    console.log(updatedProduct);
     if (updatedProduct) {
       if (updatedProduct.modifiedCount == 1)
         res.status(200).json("Product updated susccessfully");
@@ -140,9 +146,9 @@ exports.deleteProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
     const productResult = await Product.findByIdAndDelete(productId);
-    if (!productResult) {
+    if (productResult) {
       const variantsIds = productResult.variants;
-      const variantResult = await variants.deleteMany({
+      const variantResult = await Variants.deleteMany({
         _id: { $in: variantsIds },
       });
     }
