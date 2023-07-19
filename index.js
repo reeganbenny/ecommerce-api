@@ -11,13 +11,14 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
 
 const productRoutes = require("./routes/productRoutes");
+const variantRoutes = require("./routes/variantRoutes");
 
 app.use(bodyParser.json());
 app.use(cors());
 
 // Routes
 app.use("/products", productRoutes);
-app.use("/variants", productRoutes);
+app.use("/variants", variantRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json("Server is running");
