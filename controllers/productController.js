@@ -2,6 +2,31 @@ const Product = require("../models/product");
 const Variants = require("../models/variants");
 const { validationResult } = require("express-validator");
 
+exports.searchProducts = async (req, res, next) => {
+  try {
+    const { val } = req.query;
+    const variantMatches = await Variants.find({
+      name: { $regex: new RegExp(val, "i") },
+    }).select("_id");
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: new RegExp(val, "i") } },
+        { description: { $regex: new RegExp(val, "i") } },
+        { variants: { $in: variantMatches } },
+      ],
+    }).populate({
+      path: "variants",
+      match: { name: { $regex: new RegExp(val, "i") } }, // Variant name search
+    });
+    res.status(200).json(products);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.createProduct = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -60,7 +85,7 @@ exports.createProduct = async (req, res, next) => {
       });
     }
 
-    res.status(200).json("Product created successfully");
+    res.status(201).json("Product created successfully");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -127,7 +152,7 @@ exports.updateProduct = async (req, res, next) => {
     );
     if (updatedProduct) {
       if (updatedProduct.modifiedCount == 1)
-        res.status(200).json("Product updated susccessfully");
+        res.status(201).json("Product updated susccessfully");
       else {
         const error = new Error("Product updated failed...");
         error.statusCode = 404;
@@ -152,28 +177,7 @@ exports.deleteProduct = async (req, res, next) => {
         _id: { $in: variantsIds },
       });
     }
-    res.status(200).json("Product deleted successfully");
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-exports.searchProducts = async (req, res, next) => {
-  try {
-    const { val } = req.query;
-    const products = await Product.find({
-      $or: [
-        { name: { $regex: new RegExp(val, "i") } },
-        { description: { $regex: new RegExp(val, "i") } },
-      ],
-    }).populate({
-      path: "variants",
-      match: { name: { $regex: new RegExp(val, "i") } }, // Variant name search
-    });
-    res.status(200).json(products);
+    res.status(201).json("Product deleted successfully");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
