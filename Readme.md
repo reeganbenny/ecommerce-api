@@ -29,7 +29,8 @@ Running this project should be very easy, quick and automatic using monorepo.
 
 - Fork or directly clone this repository to your local machine
 - Run `npm i` / `npm install` to install all dependencies.</br>
-- Once the dependencies are finished installing, use the `npm start` or `npm run dev` command to start the server. </br>
+- Once the dependencies are finished installing, use the `npm start` or `npm run dev` command to start the server.
+- **API Endpoints:** Use this well-documented [postman documentation](https://documenter.getpostman.com/view/14829161/2s946icrZm) API endpoints to perform CRUD operations for products and variants. The search functionality endpoint allows you to search for products based on specific criteria. </br>
 
 # Technology Stack
 
